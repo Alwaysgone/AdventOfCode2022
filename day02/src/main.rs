@@ -4,11 +4,11 @@ use std::io::{self, BufRead};
 
 fn main() {
     match part01() {
-        Ok(score) => println!("strategy guide score: {}", score),
+        Ok(score) => println!("strategy guide score part1: {}", score),
         Err(e) => println!("an error occurred in part01: {}", e),
     }
     match part02() {
-        Ok(score) => println!("strategy guide score: {}", score),
+        Ok(score) => println!("strategy guide score part2: {}", score),
         Err(e) => println!("an error occurred in part02: {}", e),
     }
 }
@@ -36,26 +36,17 @@ fn part01() -> io::Result<u32> {
     for line in io::BufReader::new(file).lines() {
         if let Ok(line_content) = line {
             let mut splitted_line = line_content.split_whitespace();
-            
-            score = score + match splitted_line.next() {
-                Some("A") => match splitted_line.next() {
-                                        Some("X") => 4,
-                                        Some("Y") => 8,
-                                        Some("Z") => 3,
-                                        _ => panic!("unexpected input"),
-                                    },
-                Some("B") => match splitted_line.next() {
-                                        Some("X") => 1,
-                                        Some("Y") => 5,
-                                        Some("Z") => 9,
-                                        _ => panic!("unexpected input"),
-                                    },
-                Some("C") => match splitted_line.next() {
-                                        Some("X") => 7,
-                                        Some("Y") => 2,
-                                        Some("Z") => 6,
-                                        _ => panic!("unexpected input"),
-                                    },
+            let round = (splitted_line.next(), splitted_line.next());
+            score = score + match round {
+                (Some("A"), Some("X")) => 4,
+                (Some("A"), Some("Y")) => 8,
+                (Some("A"), Some("Z")) => 3,
+                (Some("B"), Some("X")) => 1,
+                (Some("B"), Some("Y")) => 5,
+                (Some("B"), Some("Z")) => 9,
+                (Some("C"), Some("X")) => 7,
+                (Some("C"), Some("Y")) => 2,
+                (Some("C"), Some("Z")) => 6,
                 _ => panic!("unexpected input"),
             }
         }
@@ -86,26 +77,17 @@ fn part02() -> io::Result<u32> {
     for line in io::BufReader::new(file).lines() {
         if let Ok(line_content) = line {
             let mut splitted_line = line_content.split_whitespace();
-            
-            score = score + match splitted_line.next() {
-                Some("A") => match splitted_line.next() {
-                                        Some("X") => 3,
-                                        Some("Y") => 4,
-                                        Some("Z") => 8,
-                                        _ => panic!("unexpected input"),
-                                    },
-                Some("B") => match splitted_line.next() {
-                                        Some("X") => 1,
-                                        Some("Y") => 5,
-                                        Some("Z") => 9,
-                                        _ => panic!("unexpected input"),
-                                    },
-                Some("C") => match splitted_line.next() {
-                                        Some("X") => 2,
-                                        Some("Y") => 6,
-                                        Some("Z") => 7,
-                                        _ => panic!("unexpected input"),
-                                    },
+            let round = (splitted_line.next(), splitted_line.next());
+            score = score + match round {
+                (Some("A"), Some("X")) => 3,
+                (Some("A"), Some("Y")) => 4,
+                (Some("A"), Some("Z")) => 8,
+                (Some("B"), Some("X")) => 1,
+                (Some("B"), Some("Y")) => 5,
+                (Some("B"), Some("Z")) => 9,
+                (Some("C"), Some("X")) => 2,
+                (Some("C"), Some("Y")) => 6,
+                (Some("C"), Some("Z")) => 7,
                 _ => panic!("unexpected input"),
             }
         }
