@@ -3,7 +3,6 @@ use std::io::{self, BufRead};
 use std::path::Path;
 
 fn main() {
-    let s = "thing-thing2,otherthing1-otherthing2";
     match part01() {
         Ok(sum_of_fully_contained_pairs) => println!(
             "sum of fully contained assignment pairs part1: {}",
