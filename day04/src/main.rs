@@ -17,16 +17,6 @@ fn main() {
     }
 }
 
-fn to_priority(c: char) -> u32 {
-    if c.is_ascii_lowercase() {
-        c as u32 - 96
-    } else if c.is_ascii_uppercase() {
-        c as u32 - 38
-    } else {
-        panic!("cannot convert {} to priority", c);
-    }
-}
-
 fn part01() -> io::Result<u32> {
     let path = Path::new("./input/input.txt");
     let file = match File::open(path) {
@@ -79,7 +69,7 @@ fn part02() -> io::Result<u32> {
             let (left_lower, left_upper, right_lower, right_upper) = (
                 splitted_line
                     .next()
-                    .map_or(0, |s| s.parse::<u32>())
+                    .map(|s| s.parse::<u32>().unwrap())
                     .unwrap(),
                 splitted_line
                     .next()
