@@ -87,13 +87,9 @@ fn part01() -> io::Result<String> {
         }
     }
 
-    for (i, mut stack) in crate_stacks.into_iter().enumerate() {
-        // let c:char = *stack.first().unwrap();
+    for (_, mut stack) in crate_stacks.into_iter().enumerate() {
         let first_element = stack.pop_back().unwrap();
-        println!("First stack element {}", first_element);
-        println!("Stack {}: {:?}", i, stack);
         top_crates.push(first_element);
-        println!("Stack without top crate {}: {:?}", i, stack);
     }
 
     Ok(top_crates)
@@ -152,6 +148,9 @@ fn part02() -> io::Result<String> {
             }
         }
     }
-
+    for mut stack in crate_stacks.into_iter() {
+        let first_element = stack.pop_back().unwrap();
+        top_crates.push(first_element);
+    }
     Ok(top_crates)
 }
