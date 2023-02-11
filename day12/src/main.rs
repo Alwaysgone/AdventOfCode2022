@@ -30,7 +30,7 @@ struct Route {
 
 
 fn part01() -> io::Result<u32> {
-    let path = Path::new("./input/sampleInput.txt");
+    let path = Path::new("./input/input.txt");
     let file = match File::open(path) {
         Ok(file) => file,
         Err(e) => panic!("could not open input file: {}", e),
@@ -42,7 +42,8 @@ fn part01() -> io::Result<u32> {
         if let Ok(line_content) = line {
             if let Some(start_column) = line_content.find('S') {
                 start_pos = (current_row, start_column);
-            } else if let Some(exit_column) = line_content.find('E') {
+            }
+            if let Some(exit_column) = line_content.find('E') {
                 exit_pos = (current_row, exit_column);
             } 
             height_map.push(line_content.replace("S", "a").replace("E", "z"));
@@ -56,20 +57,24 @@ fn part01() -> io::Result<u32> {
         visited_tiles: vec![start_pos],
     });
     println!("shortest route:");
-    for tile in shortest_route.visited_tiles.iter() {
-        println!("{:?}", tile);
+    match shortest_route {
+        Some(route) => {
+            for tile in route.visited_tiles.iter() {
+                println!("{:?}", tile);
+            }
+            Ok((route.visited_tiles.len() - 1) as u32)
+        },
+        _ => panic!("no shortest route"),
     }
-    Ok((shortest_route.visited_tiles.len() - 1) as u32)
 }
 
-fn get_shortest_route(current_pos:(usize, usize), exit_pos:(usize, usize), height_map:&Vec<String>, current_route:Route) -> Route {
+fn get_shortest_route(current_pos:(usize, usize), exit_pos:(usize, usize), height_map:&Vec<String>, current_route:Route) -> Option<Route> {
     if current_pos == exit_pos {
-        return current_route;
+        return Some(current_route);
     }
     let max_column_index = height_map[0].len() - 1;
     let (current_row, current_column) = current_pos;
-    let char_at = get_char_at(height_map, current_pos);
-    let current_pos_value = char_at.to_digit(10).unwrap();
+    let current_pos_value = get_char_at(height_map, current_pos) as u32;
     let mut next_tiles:Vec<(usize, usize)> = vec![];
     if current_column > 0 {
         let new_pos = (current_row, current_column - 1);
@@ -109,19 +114,42 @@ fn get_shortest_route(current_pos:(usize, usize), exit_pos:(usize, usize), heigh
         next_tiles.push(new_pos);
     }
 
-    for next_pos in next_tiles.into_iter() {
-        let new_pos_value = get_char_at(height_map, next_pos).to_digit(10).unwrap();
-        if !current_route.visited_tiles.contains(&next_pos) && new_pos_value <= current_pos_value + 1 {
-            let mut new_route = current_route.clone();
-            new_route.visited_tiles.push(next_pos);
-            let next_route = get_shortest_route(next_pos, exit_pos, height_map, new_route);
-            if next_route.visited_tiles.contains(&exit_pos) {
-                return next_route;
-            }
+    next_tiles.into_iter()
+    .filter(|next_pos| {
+        let new_pos_value = get_char_at(height_map, *next_pos) as u32;
+        !current_route.visited_tiles.contains(&next_pos) && new_pos_value <= current_pos_value + 1
+    })
+    .filter_map(|next_pos| {
+        let mut new_route = current_route.clone();
+        new_route.visited_tiles.push(next_pos);
+        let next_route = get_shortest_route(next_pos, exit_pos, height_map, new_route);
+        
+        match &next_route {
+            Some(route) => {
+                if route.visited_tiles.contains(&exit_pos) {
+                    next_route
+                } else {
+                    None
+                }
+            },
+            None => None,
         }
-    }
+    })
+    .reduce(|r1, r2| if r1.visited_tiles.len() < r2.visited_tiles.len() {r1} else {r2})
 
-    todo!()
+    // for next_pos in next_tiles.into_iter() {
+    //     let new_pos_value = get_char_at(height_map, next_pos) as u32;
+    //     if !current_route.visited_tiles.contains(&next_pos) && new_pos_value <= current_pos_value + 1 {
+    //         let mut new_route = current_route.clone();
+    //         new_route.visited_tiles.push(next_pos);
+    //         let next_route = get_shortest_route(next_pos, exit_pos, height_map, new_route);
+    //         if next_route.visited_tiles.contains(&exit_pos) {
+    //             return next_route;
+    //         }
+    //     }
+    // }
+
+    // todo!()
 }
 
 fn get_char_at(height_map:&Vec<String>, pos:(usize, usize)) -> char {
